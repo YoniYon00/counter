@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Character Counter</title>
+<style>
+  
+  :root{
+    --bg:#0f0f11;
+    --panel:#1f1f23;
+    --muted:#9aa0a6;
+    --card1:#d9b3ff;
+    --card2:#ffb43b;
+    --card3:#ff9a80;
+    --accent:#b289ff;
+    --glass: rgba(255,255,255,0.03);
+    --radius:14px;
+    --pad:18px;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  
+  html,body{
+    height:100%; 
+    margin:0; 
+    background: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.01), transparent 10%), var(--bg); 
+    color:#fff; 
+    -webkit-font-smoothing:antialiased;
+  }
+  
+  .container{
+    max-width:1100px; 
+    margin:36px auto; 
+    padding:28px;
+  }
+  
+  h1{
+    font-size:48px; 
+    line-height:1; 
+    margin:6px 0 18px; 
+    font-weight:700; 
+    text-align:center;
+  }
+  
+  .intro{
+    display:block; 
+    text-align:center; 
+    color:var(--muted); 
+    margin-bottom:20px;
+  }
+  
+  .textarea-wrap{
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00)); 
+    padding:16px; 
+    border-radius:12px; 
+    margin-bottom:12px;
+  }
+  
+  textarea{
+    width:100%; 
+    min-height:130px; 
+    background:rgba(255,255,255,0.02); 
+    border:1px solid rgba(255,255,255,0.03); 
+    color:#fff; 
+    padding:18px; 
+    border-radius:10px; 
+    font-size:16px; 
+    resize:vertical; 
+    outline:none; 
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+  }
+  
+  .controls{
+    display:flex; 
+    gap:18px; 
+    align-items:center; 
+    margin:12px 4px 26px; 
+    flex-wrap:wrap;
+  }
+  
+  .controls label{
+    display:flex; 
+    gap:8px; 
+    align-items:center; 
+    color:var(--muted); 
+    font-size:14px; 
+    cursor:pointer;
+  }
+  
+  .controls input[type="checkbox"]{
+    width:16px; 
+    height:16px;
+  }
+  
+  .limit-input{
+    display:flex; 
+    gap:8px; 
+    align-items:center; 
+    color:var(--muted);
+  }
+  
+  .limit-input input[type="number"]{
+    width:88px; 
+    padding:6px 10px; 
+    border-radius:8px; 
+    border:1px solid rgba(255,255,255,0.04); 
+    background:rgba(255,255,255,0.02); 
+    color:#fff;
+  }
+  
+
+  .cards{
+    display:flex; 
+    gap:18px; 
+    margin-bottom:22px; 
+    flex-wrap:wrap; 
+    justify-content:center;
+  }
+  
+  .card{
+    flex:1 1 220px; 
+    min-width:180px; 
+    padding:22px; 
+    border-radius:14px; 
+    color:#111; 
+    display:flex; 
+    flex-direction:column; 
+    justify-content:center; 
+    align-items:flex-start; 
+    box-shadow: 0 6px 18px rgba(0,0,0,0.5);
+  }
+  
+  .card .num{
+    font-size:44px; 
+    font-weight:800; 
+    margin-bottom:6px;
+  }
+  
+  .card .label{
+    font-size:14px; 
+    color:rgba(0,0,0,0.55);
+  }
+  
+  .card.p1{background:linear-gradient(135deg, var(--card1), #c39bff);}
+  .card.p2{background:linear-gradient(135deg, var(--card2), #c6a2c1);}
+  .card.p3{background:linear-gradient(135deg, var(--card3), #a756ab);}
+  
+  .density{margin-top:8px;}
+  .density h3{margin:12px 0 8px; font-size:18px;}
+  
+  .bars{display:flex; flex-direction:column; gap:10px;}
+  .bar-row{display:flex; gap:12px; align-items:center;}
+  .bar-row .letter{width:26px; text-align:center; font-weight:700; color:var(--muted);}
+
+  .bar-row .pct{width:74px; text-align:right; color:var(--muted); font-size:13px;}
+  
+  .meta {
+    display:flex; 
+    justify-content:space-between; 
+    color:var(--muted); 
+    margin-top:12px; 
+    font-size:13px; 
+    flex-wrap:wrap; 
+    gap:12px;
+  }
+  
+  .meta .reading{margin-left:auto;}
+  
+  .top-row{
+    display:flex; 
+    gap:12px; 
+    align-items:center; 
+    justify-content:center; 
+    margin-bottom:10px;
+  }
+  
+  .logo{
+    display:flex; 
+    gap:8px; 
+    align-items:center; 
+    font-weight:700;
+  }
+  
+  .logo .dot{
+    width:28px;
+    height:28px;
+    border-radius:6px;
+    background:linear-gradient(135deg,var(--accent), #f9b7e7);
+    display:inline-block;
+  }
+
+  @media (max-width:700px){
+    h1{font-size:36px;}
+    .card .num{font-size:36px;}
+    .cards{flex-direction:column; align-items:stretch;}
+  }
+  
+ 
+  body::after{
+    content:""; 
+    position:fixed; 
+    inset:0; 
+    pointer-events:none; 
+    background-image: radial-gradient(rgba(255,255,255,0.005) 0.6px, transparent 0.6px); 
+    background-size:14px 14px; 
+    opacity:0.9; 
+    mix-blend-mode:overlay;
+  }
+</style>
+</head>
+<body>
+  <div class="container" role="main">
+    <div class="top-row">
+      <div class="logo"><span class="dot" aria-hidden="true"></span><i>Character Counter</i></div>
+    </div>
+    <h1>Analyze your text<br/>in real-time.</h1>
+    <div class="intro">Start typing below.</div>
+    
+    <div class="textarea-wrap">
+      <textarea id="textInput" placeholder="Start typing here... (or paste your text)"></textarea>
+    </div>
+    
+    <div class="controls" aria-hidden="false">
+      <label><input type="checkbox" id="excludeSpaces"> Exclude Spaces</label>
+      <label style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="setLimit"> Set Character Limit
+      </label>
+      <div class="limit-input" id="limitContainer" style="display:none;">
+        <label style="color:var(--muted); font-size:13px;">Limit:
+          <input id="limitValue" type="number" min="1" value="300">
+        </label>
+      </div>
+      <div style="margin-left:auto; color:var(--muted);">Approx. reading time: <span id="readingTime">0 minute</span></div>
+    </div>
+    
+    <div class="cards" role="status" aria-live="polite">
+      <div class="card p1">
+        <div class="num" id="totalChars">00</div>
+        <div class="label">Total Characters</div>
+      </div>
+      <div class="card p2">
+        <div class="num" id="totalWords">00</div>
+        <div class="label">Word Count</div>
+      </div>
+      <div class="card p3">
+        <div class="num" id="totalSentences">00</div>
+        <div class="label">Sentence Count</div>
+      </div>
+    </div>
+    
+    <div class="density" aria-label="Letter density">
+      <h3>Letter Density</h3>
+      <div class="bars" id="letterBars"></div>
+    </div>
+    
+    <div class="meta">
+      <div class="muted">Tip: Toggle "Exclude Spaces" to count only letters & punctuation.</div>
+      <div class="reading">Reading speed: ~200 wpm</div>
+    </div>
+  </div>
+
+<script>
+
+const textarea = document.getElementById("textInput");
+const TotalChar = document.getElementById("totalChars");
+const wordCou = document.getElementById("totalWords");
+const SenteC = document.getElementById("totalSentences");
+const limt = document.getElementById("setLimit");
+const limitInput = document.getElementById("limitValue");
+const excludeSpaces = document.getElementById("excludeSpaces");
+const letterBars = document.getElementById("letterBars");
+
+function TotalCharacters(text) {
+  return excludeSpaces.checked ? text.replace(/\s/g, "").length : text.length;
+}
+
+function WordCount(text) {
+  return text.trim().split(/\s+/).filter(Boolean).length;
+}
+
+function sentenceCount(text) {
+  return text.split(/[.!?]+/).filter(Boolean).length;
+}
+
+function calculerLitre(text) {
+  const cleaned = text.toUpperCase().replace(/[^A-Z]/g, "");
+  const totalLetters = cleaned.length;
+  const counts = {};
+  for (let char of cleaned) {
+    counts[char] = (counts[char] || 0) + 1;
+  }
+  return { totalLetters, counts };
+}
+
+function NombreLetres(text) {
+  const { totalLetters, counts } = calculerLitre(text);
+  letterBars.innerHTML = "";
+
+  if (totalLetters === 0) {
+    letterBars.innerHTML = "<p style='color:white;'>No letters to analyze.</p>";
+    return;
+  }
+
+  const sortedLetters = Object.keys(counts).sort();
+  for (let letter of sortedLetters) {
+    const count = counts[letter];
+    const percent = ((count / totalLetters) * 100).toFixed(2);
+    const barRow = document.createElement("div");
+    barRow.className = "bar-row";
+    barRow.innerHTML = `
+      <div class="letter">${letter}</div>
+  
+      <div class="pct">${count} </div>
+    `;
+    letterBars.appendChild(barRow);
+  }
+}
+
+textarea.addEventListener("input", () => {
+  if (limt.checked && textarea.value.length > parseInt(limitInput.value)) {
+    textarea.value = textarea.value.slice(0, parseInt(limitInput.value));
+    alert("You have exceeded the maximum limit.");
+  }
+
+  TotalChar.textContent = TotalCharacters(textarea.value);
+  wordCou.textContent = WordCount(textarea.value);
+  SenteC.textContent = sentenceCount(textarea.value);
+  NombreLetres(textarea.value);
+});
+
+
+limt.addEventListener("change", () => {
+  document.getElementById("limitContainer").style.display = limt.checked ? "flex" : "none";
+});
+</script>
+
+
+ 
+</body>
+</html>
+
+
+ 
+
+
